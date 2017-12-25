@@ -43,7 +43,7 @@ cm = confusion_matrix(y_test, y_pred)
 # Applying Grid Search to find the best parameters
 from sklearn.model_selection import GridSearchCV
 parameters = [{'penalty': ['l1', 'l2'],
-               'tol': [0.009, 1e-2, 0.011],
+               'tol': [1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1],
                'C': [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]}]
 grid_search = GridSearchCV(estimator = classifier,
                            param_grid = parameters,
