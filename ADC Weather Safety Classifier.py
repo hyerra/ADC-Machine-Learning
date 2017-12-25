@@ -1,4 +1,5 @@
-# Logistic Regression
+# Weather Safety Classifier
+# Predicts the likelihood that a drone will crash to help make sure the drones are flying in safe conditions.
 
 # Importing the libraries
 import pandas as pd
