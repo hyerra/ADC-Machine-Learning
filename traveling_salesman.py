@@ -67,14 +67,15 @@ def computeShortestPath(hubs):
     Provide the hubs as an array of coordinates of the hubs.
     """
     tsp_size = len(hubs) # The number of nodes for TSP.
-    num_routes = 1 # Compute only one route.
-    depot = 0 # The first coordinate provided is assumed to be the starting point.
+    num_vehicles = 1 # The number of vehicles flying conjunction with each other to deliver the package.
+    start_location = [0] # The first coordinate provided is assumed to be the starting point.
+    end_location = [len(hubs) - 1] # The end coordinate is assumed to be the ending point.
     
     if tsp_size <= 0:
         raise ValueError('There needs to be at least 1 point for TSP to work. Make sure to at least input the origin and destination.')
     
     # Initialize the routing model.
-    routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
+    routing = pywrapcp.RoutingModel(tsp_size, num_vehicles, start_location, end_location)
     
     # Setup the search parameters.
     search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
@@ -86,10 +87,17 @@ def computeShortestPath(hubs):
     
     # Computes the shortest path between the hubs.
     shortest_path = routing.SolveWithParameters(search_parameters)
+    return extractShortestPath(routing, shortest_path)
+        
+def extractShortestPath(routing, shortest_path):
+    """
+    Extracts the shortest path into two arrays: hub_order and distance which contain
+    information about the best order of hubs to travel and distances.
+    """
     
     if shortest_path:
         # Iterate through the nodes.
-        hubOrder = []
+        hub_order = []
         distances = []
         
         route_number = 0 # Only one route should be returned so get the first one.
@@ -99,7 +107,7 @@ def computeShortestPath(hubs):
         while not routing.IsEnd(index):
             # Convert variable indices to node indices in the displayed route.
             # Compute the hub order.
-            hubOrder.append(hubs[index])
+            hub_order.append(hubs[index])
             
             # Compute the distance between the hubs.
             if previous_index is not None:
@@ -110,11 +118,19 @@ def computeShortestPath(hubs):
                 
             previous_index = index
             index = shortest_path.Value(routing.NextVar(index))
-                
-        return (hubOrder, distances)
+        
+        # Compute the order and distance for the last point.
+        hub_order.append(hubs[len(hubs) - 1])
+        
+        from_hub = hubs[len(hubs) - 2]
+        to_hub = hubs[len(hubs) - 1]
+        distance_between_nodes = distance(from_hub[0], from_hub[1], to_hub[0], to_hub[1])
+        distances.append(distance_between_nodes)
+        
+        return (hub_order, distances)
     else:
         raise RuntimeError('No solution found for these hubs.')
-
+    
 # Compute the Traveling Salesman Problem from a hubs file on the server.
 import json
 hubs_data = json.load(open('hubs.json'))
