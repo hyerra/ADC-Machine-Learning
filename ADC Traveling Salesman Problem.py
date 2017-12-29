@@ -118,5 +118,10 @@ def computeShortestPath(hubs):
 # Compute the Traveling Salesman Problem from a hubs file on the server.
 import json
 hubs_data = json.load(open('hubs.json'))
-hubs = hubs_data["hubs"]
-computeShortestPath(hubs)
+hubs_array = hubs_data["hubs"]
+hubs = []
+
+for hub in hubs_array:
+    hubs.append((hub["lat"], hub["lon"]))
+
+print(computeShortestPath(hubs))
