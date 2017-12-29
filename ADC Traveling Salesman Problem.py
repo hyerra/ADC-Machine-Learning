@@ -1,10 +1,8 @@
 # Traveling Salesman Problem
 # Solves the Traveling Salesman Problem with the available drones to determine the most efficient route for a package.
 
-# Import the libraries.
-import math
-
 # Calculate the distances between two points using the haversine formula.
+import math
 def distance(lat1, long1, lat2, long2):
     # Note: The formula used in this function is not exact, as it assumes the Earth is a perfect sphere.
     
@@ -116,3 +114,9 @@ def computeShortestPath(hubs):
         return (hubOrder, distances)
     else:
         raise RuntimeError('No solution found for these hubs.')
+
+# Compute the Traveling Salesman Problem from a hubs file on the server.
+import json
+hubs_data = json.load(open('hubs.json'))
+hubs = hubs_data["hubs"]
+computeShortestPath(hubs)
